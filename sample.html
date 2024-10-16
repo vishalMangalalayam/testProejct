@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Node.js Data Display</title>
+</head>
+<body>
+  <h1>Data from Backend</h1>
+
+  <form id="dataForm">
+    <input type="text" id="title" placeholder="Title" required />
+    <input type="text" id="description" placeholder="Description" required />
+    <button type="submit">Submit</button>
+  </form>
+
+  <h2>Data List</h2>
+  <ul id="dataList"></ul>
+
+  <script>
+    const dataForm = document.getElementById('dataForm');
+    const dataList = document.getElementById('dataList');
+
+    // Fetch and display data
+    async function fetchData() {
+      const response = await fetch('http://localhost:5000/api/data');
+      const data = await response.json();
+      dataList.innerHTML = data.map(item => `<li>${item.title}: ${item.description}</li>`).join('');
+    }
+
+    // Submit form data to backend
+    dataForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const title = document.getElementById('title').value;
+      const description = document.getElementById('description').value;
+
+      await fetch('http://localhost:5000/api/data', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ title, description }),
+      });
+
+      dataForm.reset();
+      fetchData();
+    });
+
+    // Initial data fetch
+    fetchData();
+  </script>
+</body>
+</html>
